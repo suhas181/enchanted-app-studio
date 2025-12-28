@@ -1,13 +1,41 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { LoginPage } from "../components/LoginPage";
+import { OnboardingPage, OnboardingData } from "../components/OnboardingPage";
+import { MainApp } from "../components/MainApp";
+
+type AppState = "login" | "onboarding" | "app";
 
 const Index = () => {
+  const [appState, setAppState] = useState<AppState>("login");
+  const [userData, setUserData] = useState<OnboardingData | null>(null);
+
+  const handleLogin = () => {
+    // For returning users, skip onboarding
+    // For demo, we'll go to onboarding
+    setAppState("onboarding");
+  };
+
+  const handleSignUp = () => {
+    setAppState("onboarding");
+  };
+
+  const handleOnboardingComplete = (data: OnboardingData) => {
+    setUserData(data);
+    setAppState("app");
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      {appState === "login" && (
+        <LoginPage onLogin={handleLogin} onSignUp={handleSignUp} />
+      )}
+      {appState === "onboarding" && (
+        <OnboardingPage onComplete={handleOnboardingComplete} />
+      )}
+      {appState === "app" && userData && (
+        <MainApp userName={userData.nickname || userData.name} petName={userData.petName} />
+      )}
+    </>
   );
 };
 
